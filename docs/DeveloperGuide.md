@@ -1,5 +1,10 @@
 # Developer Guide
 
+Last verified: 2026-03-26
+Applies to: `9197b09`
+Networks: Sepolia (L1) ↔ Fluent testnet (L2)
+Source of truth: `scripts/`, `deployments/`, `foundry.toml`
+
 ## Prerequisites
 
 - **[Foundry](https://book.getfoundry.sh/getting-started/installation)** — `forge`, `cast`, `anvil`
@@ -39,17 +44,17 @@ cp .env.example .env
 forge clean && forge build
 
 # Deploy everything (L1 + L2 + setup)
-./scripts/deploy.sh
+./scripts/deploy/deploy.sh
 ```
 
 Available flags:
 
 ```bash
-./scripts/deploy.sh                # deploy all (L1 + L2 + setup)
-./scripts/deploy.sh --l1-only      # deploy L1 only
-./scripts/deploy.sh --l2-only      # deploy L2 only
-./scripts/deploy.sh --setup-only   # setup only (requires deployed manifests)
-./scripts/deploy.sh --preflight    # clean build
+./scripts/deploy/deploy.sh                # deploy all (L1 + L2 + setup)
+./scripts/deploy/deploy.sh --l1-only      # deploy L1 only
+./scripts/deploy/deploy.sh --l2-only      # deploy L2 only
+./scripts/deploy/deploy.sh --setup-only   # setup only (requires deployed manifests)
+./scripts/deploy/deploy.sh --preflight    # clean build
 ```
 
 ### Step-by-step (manual)
@@ -236,7 +241,7 @@ Non-upgradeable contracts (NitroVerifier, L1BlockOracle, L1GasOracle) are replac
 ### Native token bridge (L1→L2)
 
 ```bash
-./scripts/test-native-bridge.sh
+./scripts/operations/bash/test-native-bridge.sh
 ```
 
 Steps: send native on L1 → parse SentMessage event → update L1BlockOracle → fund L2 bridge (testnet only, simulates consensus-layer minting) → relay on L2 → verify balance.
@@ -244,7 +249,7 @@ Steps: send native on L1 → parse SentMessage event → update L1BlockOracle �
 ### ERC20 bridge (L1→L2)
 
 ```bash
-./scripts/test-erc20-bridge.sh
+./scripts/operations/bash/test-erc20-bridge.sh
 ```
 
 Steps: deploy fresh test token on L1 → deposit via ERC20Gateway → parse SentMessage event → update L1BlockOracle → relay on L2 → verify pegged token deployed and balance correct.

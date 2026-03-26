@@ -1,5 +1,10 @@
 # Upgrade Safety
 
+Last verified: 2026-03-26
+Applies to: `9197b09`
+Networks: Sepolia (L1) ↔ Fluent testnet (L2)
+Source of truth: `docs/UpgradeSafety.md` + `scripts/upgrade/` + `scripts/deploy/`
+
 ## Current Upgrade Surfaces
 
 - `FluentBridge.sol`: UUPS proxy, authorized by `DEFAULT_ADMIN_ROLE`.

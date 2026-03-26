@@ -1,5 +1,10 @@
 # Security Model
 
+Last verified: 2026-03-26
+Applies to: `9197b09`
+Networks: Sepolia (L1) ↔ Fluent testnet (L2)
+Source of truth: `contracts/` + `docs/`
+
 ## Contract Topology
 
 - `FluentBridge.sol`: cross-chain message transport, nonce tracking, native-value custody, rollback handling, and relayer/proof execution.

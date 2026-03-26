@@ -185,6 +185,12 @@ forge coverage --ir-minimum --report lcov
 
 ## 4. Documentation
 
+Where to start:
+
+- New engineer / contributor: start with `docs/DeveloperGuide.md`, then skim `docs/SecurityModel.md`.
+- Security reviewer / auditor: start with `docs/SecurityModel.md`, then read `docs/BridgeFailuresAndRollback.md` and `docs/UpgradeSafety.md`.
+- Ops / deployment: start with `docs/DeveloperGuide.md` (Deployment, Upgrades, E2E testing), then keep `docs/Addresses.md` handy.
+
 | Document | What it covers |
 |----------|---------------|
 | **[`docs/SecurityModel.md`](docs/SecurityModel.md)** | Contract topology, all privileged roles and capabilities, trust assumptions, core invariants, high-trust operations. **Start here for the full actor/role map.** |

@@ -1,5 +1,10 @@
 # Deployed Bridge Addresses
 
+Last verified: 2026-03-26
+Applies to: `9197b09`
+Networks: Sepolia (L1) ↔ Fluent testnet (L2)
+Source of truth: `deployments/testnet/l1.json` + `deployments/testnet/l2.json`
+
 Current deployment: **Sepolia (L1)** ↔ **Fluent testnet (L2)**.
 
 Source: `deployments/testnet/l1.json`, `deployments/testnet/l2.json`.
@@ -10,20 +15,20 @@ Source: `deployments/testnet/l1.json`, `deployments/testnet/l2.json`.
 
 | Contract | Address |
 |----------|---------|
-| **NitroVerifier** | `0x31b6A225FD96770a59b9d6A63973DE1C881B393d` |
-| **Rollup** (proxy) | `0x30998EE150e669ed3761F80dda435CaaA6bf5032` |
-| Rollup (impl) | `0xaA2a73D5158aCdFbd73c6A26f286a8E9a9c0766a` |
-| **L1FluentBridge** (proxy) | `0x94A1454943FCf5C88C270F7B7cE3D2F23fc84FCf` |
-| L1FluentBridge (impl) | `0x7CB564503A7445e8C24D8495c141E8dB18f9b556` |
-| **ERC20TokenFactory** (proxy) | `0x72ef90575Dd90b6f22e3faED2CFA0AA8e8Ee7DBa` |
-| ERC20TokenFactory (impl) | `0xBa2D7Ac3D0bC97F38Fa6a8119845c1F20F41E45e` |
-| UpgradeableBeacon | `0x0749709b37FDE16B8eAB94e247F76E30c58AC72b` |
-| ERC20PeggedToken (impl) | `0x8B149688869e25d713A8f409DB62dDC0b7a2FF88` |
-| **ERC20Gateway** (proxy) | `0xbA1d2D76184127fD289D46bB2a721B8D6339372D` |
-| ERC20Gateway (impl) | `0x3F17fC9C8a7FDd92dbDBF821a651EBcfffA6ddaB` |
-| **NativeGateway** (proxy) | `0x1a2B1cCb1bE6789eF5878f8d65998e5CA7e0393F` |
-| NativeGateway (impl) | `0x7A18D9d23b4316EAD042cbDDca92fDf4a8D09B6F` |
-| MockERC20 (test token) | `0xE47b61EeFa9a4019b2CE699920BE91092b5bda39` |
+| **NitroVerifier** | `0xB40f6f3Dd7ac010323E431928064bB8318bD0233` |
+| **Rollup** (proxy) | `0x6473D94D54bEa36211560Bae7C5b3d4B292721a3` |
+| Rollup (impl) | `0x61E21bd0163696d7D93d3BEE7B153FE1112e7Dbe` |
+| **L1FluentBridge** (proxy) | `0x8B000ab0D2572E62377D6B6dEd7d4A5C9434E250` |
+| L1FluentBridge (impl) | `0x72534145CcB1246356413bD6bdDC5C4E8bA9d6e6` |
+| **ERC20TokenFactory** (proxy) | `0xF7ee76557bfDc3e019B401b043729D4602cD31CE` |
+| ERC20TokenFactory (impl) | `0x276869cb03c1000719c247fF9478F3d7Dd927C98` |
+| UpgradeableBeacon | `0x72DD7D37719f868b1d45A09f86c621563f9b6987` |
+| ERC20PeggedToken (impl) | `0xFaf24dE9574e21f44c833ffaf5E799B96Cc34C2b` |
+| **ERC20Gateway** (proxy) | `0x8D6849d1Fd008986EE78CeC5f8CeD8B971F291aC` |
+| ERC20Gateway (impl) | `0xF286514354dBAd867600558D4f58611D479bf055` |
+| **NativeGateway** (proxy) | `0x88C24633dfA2a8aEa501d0C9d771E4288ff601E7` |
+| NativeGateway (impl) | `0x75Ca447C66f42b7945d2823c7880d55160DB6487` |
+| MockERC20 (test token) | `0x2201126B50513A1C41d214c9e65A6f013E8054B8` |
 
 - **Chain ID:** 11155111
 - **RPC:** https://ethereum-sepolia-rpc.publicnode.com
@@ -35,15 +40,15 @@ Source: `deployments/testnet/l1.json`, `deployments/testnet/l2.json`.
 
 | Contract | Address |
 |----------|---------|
-| **L1BlockOracle** | `0xBFbeEC28d16c227453dEc576120F006c258FDDaC` |
-| **L2FluentBridge** (proxy) | `0x22BC1D0b22CD5C2696c4a05Deaeb18c91226B37A` |
-| L2FluentBridge (impl) | `0x6317faa6389184308903A81b4989F88aBB044A4F` |
-| **UniversalTokenFactory** (proxy) | `0x67AF4912A5A8f8ec31D840bdE9E76276DDEFAD6b` |
-| UniversalTokenFactory (impl) | `0x7FaE25a23237C2B6e28b02Cf8567982a6503e528` |
-| **ERC20Gateway** (proxy) | `0xEd7E1E435B64f61FBD975e1e909aB37a6d3c2092` |
-| ERC20Gateway (impl) | `0xeDeA99d586a5d536d3a64e491FCc58ed65E37F5B` |
-| **NativeGateway** (proxy) | `0x990568FfaDddBDBF614ff1EA0eF5630BD8957Ddc` |
-| NativeGateway (impl) | `0x5d88CD642b160477A2A7B121edF8338dff6B59b3` |
+| **L1BlockOracle** | `0x58B1cCEd2b3A326edFFc21A2eb2a5fB7BC3F54B9` |
+| **L2FluentBridge** (proxy) | `0xE72C7eEA6B69998B9a34C4049c56D7D07bBEFB03` |
+| L2FluentBridge (impl) | `0x93E656737dFbC3acD2E151CD857E288734439dD6` |
+| **UniversalTokenFactory** (proxy) | `0x7e0FFe7D72BA981ec0C4ba607e508f723e0dCE98` |
+| UniversalTokenFactory (impl) | `0x1e83891B6D2632DE6AF0AC58aac468099B8aef0A` |
+| **ERC20Gateway** (proxy) | `0x1e6A15E8667D20faaA7552eb5D5816Cc9a68Da89` |
+| ERC20Gateway (impl) | `0x032323291b40358AC04538856d3F2FC434670dCa` |
+| **NativeGateway** (proxy) | `0xf72d447eca5D99019CDe18f976cfBF0a3cD126c0` |
+| NativeGateway (impl) | `0xe2D8C8bd6B97Ae04658A8a0777E26DB264b20050` |
 | Pegged token (precompile) | `0x0000000000000000000000000000000000520008` |
 
 - **Chain ID:** 20994
