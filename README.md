@@ -1,6 +1,6 @@
 # Fluent Bridge Contracts
 
-Fluent is a Layer 2 blockchain that settles on Ethereum. This repository contains the Solidity contracts for cross-chain communication between Ethereum (L1) and Fluent (L2): a general-purpose message bridge, ERC-20 and native ETH gateways built on top of it, and an L1 rollup contract that enables trustless withdrawal verification via Merkle proofs.
+Fluent is a Layer 2 blockchain that settles on Ethereum. This repository contains the Solidity contracts for cross-chain communication between Ethereum (L1) and Fluent (L2): a general-purpose message bridge, ERC-20 and native ETH gateways built on top of it, and an L1 Rollup contract that enables trustless withdrawal verification via Merkle proofs.
 
 ## 1. Architecture
 
@@ -8,13 +8,13 @@ Fluent is a Layer 2 blockchain that settles on Ethereum. This repository contain
 
 | Directory | Contracts | Purpose |
 |-----------|-----------|---------|
-| `contracts/bridge/` | `FluentBridge` (abstract), `L1FluentBridge`, `L2FluentBridge`, storage layout | Cross-chain message transport: send, receive (relayer), receive-with-proof (L1), rollback, retry |
+| `contracts/bridge/` | `FluentBridge` (abstract), `L1FluentBridge`, `L2FluentBridge` | Cross-chain message transport: send, receive (relayer), receive-with-proof (L1), retry |
 | `contracts/gateways/` | `GatewayBase` (abstract), `ERC20Gateway`, `NativeGateway` | User-facing asset entrypoints. Lock/escrow on source, mint/release on destination |
 | `contracts/factories/` | `GenericTokenFactory`, `ERC20TokenFactory`, `UniversalTokenFactory` | Deterministic CREATE2 deployment of pegged tokens on the destination chain |
-| `contracts/tokens/` | `ERC20PeggedToken` | Beacon-proxied pegged ERC-20 representation on L2 |
-| `contracts/rollup/` | `Rollup`, `RollupStorageLayout` | L1 rollup: batch lifecycle, challenges, finalization, bridge deposit consumption |
-| `contracts/verifier/` | `NitroVerifier` | Nitro enclave signature verification |
-| `contracts/oracles/` | `L1BlockOracle`, `L1GasOracle` | L2-side oracles for L1 block number (deadline enforcement) and gas price (fee calculation) |
+| `contracts/tokens/` | `ERC20PeggedToken` | Beacon-proxied pegged UST(Universal Token Standard) representation on L1 |
+| `contracts/rollup/` | `Rollup`, `RollupStorageLayout` | Publishes L2 block headers and blobs for data reconstruction, enables correctness challenges, and enforces inclusion of all bridge deposits (prevents relayer censorship) |
+| `contracts/verifier/` | `NitroVerifier` | Nitro enclave signature verification and Enclave Pub Key attestation |
+| `contracts/oracles/` | `L1BlockOracle`, `L1GasOracle` | L2-side oracles for L1 block number (deadline enforcement) and gas price (fee calculation from L2 -> L1) |
 | `contracts/libraries/` | `Heap`, `Queue`, `MerkleTree`, `ExcessivelySafeCall` | Min-heap (challenge queue), FIFO (sent messages), Merkle proofs, safe external calls |
 
 All contracts use **UUPS proxy** pattern with **ERC-7201 namespaced storage**. Interfaces in `contracts/interfaces/` are the source of truth for function signatures, errors, and events.
@@ -23,37 +23,40 @@ All contracts use **UUPS proxy** pattern with **ERC-7201 namespaced storage**. I
 
 **L1 → L2 deposit (ERC-20 example):**
 
-1. User calls `ERC20Gateway.sendTokens(token, recipient, amount)` with `msg.value` covering the bridge fee.
+1. User calls `ERC20Gateway.sendTokens(token, recipient, amount)`. There is no fee for L1 -> L2 messaging.
 2. Gateway escrows the origin token and calls `FluentBridge.sendMessage(remoteGateway, payload)`.
-3. Bridge emits `SentMessage` (sender, to, value, chainId, blockNumber, nonce, messageHash, data). On L1 with rollup configured, the message is also enqueued for later proving.
-4. Off-chain relayer picks up the event and calls `L2FluentBridge.receiveMessage(...)` with the same parameters and matching `msg.value`.
-5. L2 bridge delivers the payload to the remote `ERC20Gateway`, which mints a pegged token to the recipient.
+3. Bridge emits `SentMessage` (sender, to, value, chainId, blockNumber, nonce, messageHash, data). On L1, the message is enqueued for later proving by Rollup (prevents relayer censorship).
+4. Off-chain Relayer picks up the event and calls `L2FluentBridge.receiveMessage(...)` with the same parameters.
+5. L2 bridge delivers the payload to the L2 `ERC20Gateway`, which mints a pegged token(UST) to the recipient.
+6. During `acceptNextBatch`, Rollup dequeues queued L1 deposit message hashes from L1FluentBridge and verifies they match each L2 block header’s depositRoot.
 
 ```mermaid
 sequenceDiagram
     participant User
     participant L1GW as L1 ERC20Gateway
     participant L1Br as L1FluentBridge
+    participant Rollup
     participant Relayer
     participant L2Br as L2FluentBridge
     participant L2GW as L2 ERC20Gateway
 
-    User->>L1GW: sendTokens(token, recipient, amount)
+    User->>L1GW: sendTokens(token, recipient, amount) + bridge fee
     L1GW->>L1Br: sendMessage(L2GW, payload)
     L1Br-->>Relayer: SentMessage event
     Relayer->>L2Br: receiveMessage(...)
     L2Br->>L2GW: receivePeggedTokens(...)
     L2GW->>User: mint pegged token
+    Rollup->>L1Br: popSentMessage() during acceptNextBatch
+    L1Br-->>Rollup: deposit IDs for depositRoot verification
 ```
 
-**L2 → L1 withdrawal** is the reverse: burn pegged token on L2, message to L1 gateway, release escrowed token on L1. Two delivery paths exist on L1:
+**L2 → L1 withdrawal** is the reverse: burn pegged token on L2, message to L1 gateway, release escrowed token on L1.
 
-- **Trusted path:** Relayer calls `L1FluentBridge.receiveMessage(...)` (same as deposit, but L1-bound).
-- **Proof path:** Anyone calls `L1FluentBridge.receiveMessageWithProof(batchIndex, blockHeader, ..., withdrawalProof, blockProof)` using finalized rollup data and Merkle proofs — no relayer trust required.
+- Anyone calls `L1FluentBridge.receiveMessageWithProof(batchIndex, blockHeader, ..., withdrawalProof, blockProof)` using finalized rollup data and Merkle proofs — no relayer trust required. Normally, this method is called by the relayer.
 
 **Native ETH bridging** follows the same pattern via `NativeGateway.sendNativeTokens(recipient)` with `msg.value` as the bridged amount.
 
-**Failure and rollback:** If delivery fails (target reverts, L2 deadline exceeded), the message is marked `Failed`. It can be retried via `receiveFailedMessage`, or on L1 the sender can be refunded via `rollbackMessageWithProof`. See [`docs/BridgeFailuresAndRollback.md`](docs/BridgeFailuresAndRollback.md) for the full lifecycle with state diagrams.
+**Failure:** If delivery fails (target reverts, L2 deadline exceeded), the message is marked `Failed`. It can be retried via `receiveFailedMessage`.
 
 ### Rollup batch lifecycle
 
