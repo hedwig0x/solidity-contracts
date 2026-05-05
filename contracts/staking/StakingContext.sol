@@ -39,6 +39,7 @@ abstract contract StakingContext is Initializable, UUPSUpgradeable, Ownable2Step
         _stakingPoolContract = stakingPoolContract;
         _governanceContract = governanceContract;
         _chainConfigContract = chainConfigContract;
+        _disableInitializers();
     }
 
     function __StakingContext_init(address initialOwner) internal onlyInitializing {
